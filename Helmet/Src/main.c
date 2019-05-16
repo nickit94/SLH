@@ -94,6 +94,7 @@ int main(void)
   button_init();
   ca_random_init();
   i2c_init();
+  ina219_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,8 +106,6 @@ int main(void)
 	apa106_update();
 	button_fsm();
 	ds18b20_fsm();
-
-
 
 	if (button_check(&but1, 300)) container_next();
     /* USER CODE BEGIN 3 */

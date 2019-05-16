@@ -2,7 +2,6 @@
 
 #define asvb array_size_virtual_bufs
 
-
 const uint8_t mas_count_leds_in_channel[APA106_NUM_CHANNELS] = {
 		APA106_CH0_NUM_PIXEL, APA106_CH1_NUM_PIXEL, APA106_CH2_NUM_PIXEL,
 		APA106_CH3_NUM_PIXEL, APA106_CH4_NUM_PIXEL, APA106_CH5_NUM_PIXEL,
@@ -99,7 +98,6 @@ void led_buffer_shift_one_pos(shift_direction_t direction, shift_mode_t mode)
 		for (uint8_t y = 0; y < asvb[2]; y++)
 			led_buffer[0][asvb[3] + y] = (y < asvb[3]) ? led_buffer[0][0 + y] : (rgb_t)COLOR_BLACK; 		// 0.2 <- 0.1
 
-
 		/* ---------- Копирование физических каналов по центру ---------- */
 		// 0.1 - 11.1
 		for (uint8_t x = 1; x < MAX_X; x++)
@@ -172,7 +170,6 @@ void led_buffer_shift_one_pos(shift_direction_t direction, shift_mode_t mode)
 			}
 		}
 
-
 		/* ---------- Копирование виртуальных каналов слева ---------- */
 		for (uint8_t y = 0; y < asvb[3]; y++)
 			led_buffer[0][0 + y] = led_buffer[0][asvb[3] + y]; 											// 0.1 <- 0.2
@@ -182,7 +179,6 @@ void led_buffer_shift_one_pos(shift_direction_t direction, shift_mode_t mode)
 
 		for (uint8_t y = 0; y < asvb[1]; y++)
 			led_buffer[1][asvb[4] + y] = led_buffer[2][asvb[5] + y]; 									// 1.2 <- 2.2
-
 
 		/* ---------- Применение режима сдвига - стирание или тор ---------- */
 		if (mode == shift_mode_erase)
@@ -198,9 +194,7 @@ void led_buffer_shift_one_pos(shift_direction_t direction, shift_mode_t mode)
 	}
 }
 
-
 /* public: */
-
 void led_buffer_init()
 {
 	for (uint8_t x = 0; x < MAX_X; x++)

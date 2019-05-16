@@ -2,7 +2,7 @@
 
 /* private:  */
 static uint8_t dt[8] = {0};
- int8_t temperature = 0;
+static int8_t temperature = 0;
 static uint8_t cur_state = 0;
 static uint8_t count_try = 0;
 static swtimer_t timer_wait_data;

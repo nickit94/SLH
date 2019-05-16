@@ -1,6 +1,7 @@
-#include "constructor.h"
+#include "container.h"
 
-#define COLORS { COLOR_YELLOW, COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_PINK, COLOR_PURPLE, COLOR_ORANGE, COLOR_CYAN, COLOR_LIGHT_GREEN, COLOR_WHITE }
+/* Основная палитра */
+#define MAIN_COLORS { COLOR_YELLOW, COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_PINK, COLOR_PURPLE, COLOR_ORANGE, COLOR_CYAN, COLOR_LIGHT_GREEN, COLOR_WHITE }
 
 /* ---------------------------  for all objects: ---------------------------  */
 
@@ -34,11 +35,11 @@ static uint8_t cur_container = 0;
 static uint8_t array_container_last_obj[MAX_CONTAINER] = {0};
 static uint8_t fl_start_update = 0;
 
-palette_t palette_replacement = {palette_rule_replacement, COLORS, 10};
-palette_t palette_accumulation = {palette_rule_accumulation, COLORS, 10};
-palette_t palette_gradient = {palette_rule_gradient, COLORS, 10};
+palette_t palette_replacement = {palette_rule_replacement, MAIN_COLORS, 10};
+palette_t palette_accumulation = {palette_rule_accumulation, MAIN_COLORS, 10};
+palette_t palette_gradient = {palette_rule_gradient, MAIN_COLORS, 10};
 palette_t palette_rainbow = {palette_rule_rainbow, {}, 0};
-palette_t palette_at_once = {palette_rule_at_once, COLORS, 10};
+palette_t palette_at_once = {palette_rule_at_once, MAIN_COLORS, 10};
 
 
 /* private container: */

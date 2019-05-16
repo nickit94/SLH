@@ -8,8 +8,6 @@ void draw_pixel(uint8_t x0, uint8_t y0, rgb_t rgb)
 	if (x0 > MAX_X || y0 > MAX_Y) return;
 
 	led_buffer[x0][y0] = rgb;
-
-	//apa106_set_pixel(x0, y0, rgb.r, rgb.g, rgb.b);
 }
 void draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, rgb_t rgb)
 {

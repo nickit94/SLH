@@ -157,7 +157,7 @@ void rect_rainbow(rectangle_t* rect)
 	switch(rect->animation.current_state)
 	{
 	case 0:
-		rect->animation.hsv_rainbow = rgb2hsv((rgb_t)COLOR_RED);
+		rect->animation.hsv_rainbow = color_rgb2hsv((rgb_t)COLOR_RED);
 		swTimerSet(&rect->animation.timer_palette, 0, rect_time_color / RAINBOW_DELAY);
 		rect->animation.current_state = 1;
 	break;
@@ -165,7 +165,7 @@ void rect_rainbow(rectangle_t* rect)
 	case 1:
 		for (uint8_t i = 0; i < rect->radius; i++)
 		{
-			draw_rectangle(rect->x0 - i, rect->y0 - i, rect->x0 + i, rect->y0 + i, hsv2rgb(rect->animation.hsv_rainbow));
+			draw_rectangle(rect->x0 - i, rect->y0 - i, rect->x0 + i, rect->y0 + i, color_hsv2rgb(rect->animation.hsv_rainbow));
 			rect->animation.hsv_rainbow.h = (rect->animation.hsv_rainbow.h + (255 / rect->radius)) % 255;
 		}
 

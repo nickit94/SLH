@@ -130,7 +130,7 @@ void ca_update_palette(celluar_automaton_t* ca)
 
 		case palette_rule_rainbow:
 			ca->animation.hsv_rainbow.h = (ca->animation.hsv_rainbow.h + RAINBOW_STEP * 2) % 255;
-			ca->current_color = hsv2rgb(ca->animation.hsv_rainbow);
+			ca->current_color = color_hsv2rgb(ca->animation.hsv_rainbow);
 		break;
 
 		case palette_rule_at_once:
@@ -184,7 +184,7 @@ void ca_animating(celluar_automaton_t* ca)
 
 		/* Rule color */
 		if (ca_palette.palette_rule == palette_rule_gradient) 	color_get_gradient(ca_palette.array_colors[0], ca_palette.array_colors[1], ca->animation.array_gradient);
-		if (ca_palette.palette_rule == palette_rule_rainbow)  	ca->animation.hsv_rainbow = rgb2hsv((rgb_t)COLOR_RED);
+		if (ca_palette.palette_rule == palette_rule_rainbow)  	ca->animation.hsv_rainbow = color_rgb2hsv((rgb_t)COLOR_RED);
 
 		/* Timers */
 		if (ca_palette.palette_rule == palette_rule_replacement)	swTimerSet(&ca->animation.timer_palette, 0, ca_time_color / ca_multiple);

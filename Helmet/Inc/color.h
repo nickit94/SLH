@@ -25,8 +25,8 @@ uint8_t _max(uint8_t a, uint8_t b);
 uint8_t _min(uint8_t a, uint8_t b);
 uint8_t _round(uint8_t a, uint8_t b);
 
-rgb_t hsv2rgb(hsv_t hsv);
-hsv_t rgb2hsv(rgb_t rgb);
+rgb_t color_hsv2rgb(hsv_t hsv);
+hsv_t color_rgb2hsv(rgb_t rgb);
 
 void color_get_gradient(rgb_t color1, rgb_t color2, rgb_t* mas_color);
 rgb_t color_reduce(rgb_t rgb, uint8_t num);

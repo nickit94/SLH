@@ -1,46 +1,31 @@
 #include "INA219.h"
 
 /* The following multipliers are used to convert raw current and power values to mA and mW, taking into account the current config settings */
-uint32_t ina219_currentDivider_mA;
-uint32_t ina219_powerMultiplier_mW;
+uint32_t ina219_current_divider_mA;
+uint32_t ina219_power_multiplier_mW;
 uint32_t ina219_calValue;
 
 /* Sends a single command byte over I2C */
-void wireWriteRegister (uint8_t reg, uint16_t value)
+void ina219_write_register(uint8_t device_addr, uint8_t reg, uint16_t value)
 {
     uint8_t i2c_temp[2];
     i2c_temp[0] = value>>8;
     i2c_temp[1] = value;
 
-    i2c_write_mem(INA219_ADDRESS, reg, i2c_temp, 2);
-
-    //HAL_I2C_Mem_Write(&hi2c1, INA219_ADDRESS << 1, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*)i2c_temp, 2, HAL_MAX_DELAY);
-    HAL_Delay(1);
+    i2c_write_mem(device_addr, reg, i2c_temp, 2);
 }
 
 /* Reads a 16 bit values over I2C */
-void wireReadRegister(uint8_t reg, uint16_t *value)
+void ina219_read_register(uint8_t devive_addr, uint8_t reg, uint16_t *value)
 {
     uint8_t i2c_temp[2];
 
-    i2c_read_mem(INA219_ADDRESS, reg, i2c_temp, 2);
-
-    //HAL_I2C_Mem_Read(&hi2c1, INA219_ADDRESS << 1, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*)i2c_temp, 2, HAL_MAX_DELAY);
-    HAL_Delay(1);
+    i2c_read_mem(devive_addr, reg, i2c_temp, 2);
     *value = ((uint16_t)i2c_temp[0]<<8 )|(uint16_t)i2c_temp[1];
 }
 
-/**************************************************************************/
-/*!
-    @brief  Configures to INA219 to be able to measure up to 32V and 3A
-            of current.  Each unit of current corresponds to 100uA, and
-            each unit of power corresponds to 2mW. Counter overflow
-            occurs at 3.2A.
-
-    @note   These calculations assume a 0.1 ohm resistor is present
-*/
-/**************************************************************************/
-void setCalibration_16V_3A()
+/* Calibration 0x05 register */
+void ina219_calibration_16v_3a(uint8_t devive_addr)
 {
 	// VBUS_MAX = 16V             (Assumes 32V, can also be set to 16V)
 	// VSHUNT_MAX = 0.32          (Assumes Gain 8, 320mV, can also be 0.16, 0.08, 0.04)
@@ -67,7 +52,7 @@ void setCalibration_16V_3A()
 	// Cal = trunc (0.04096 / (Current_LSB * RSHUNT))
 	// Cal = 4096 (0x1000)
 
-	  ina219_calValue = 4096;
+	ina219_calValue = 4096;
 
 	// 6. Calculate the power LSB
 	// PowerLSB = 20 * CurrentLSB
@@ -101,11 +86,11 @@ void setCalibration_16V_3A()
 	// MaximumPower = 102.4W
 
 	// Set multipliers to convert raw current/power values
-	ina219_currentDivider_mA = 10;  // Current LSB = 100uA per bit (1000/100 = 10)
-	ina219_powerMultiplier_mW = 2;     // Power LSB = 1mW per bit (2/1)
+	ina219_current_divider_mA = 10;  	 // Current LSB = 100uA per bit (1000/100 = 10)
+	ina219_power_multiplier_mW = 2;     // Power LSB = 1mW per bit (2/1)
 
 	// Set Calibration register to 'Cal' calculated above
-	wireWriteRegister(INA219_REG_CALIBRATION, ina219_calValue);
+	ina219_write_register(devive_addr, INA219_REG_CALIBRATION, ina219_calValue);
 
 	// Set Config register to take into account the settings above
 	uint16_t config = INA219_CONFIG_BVOLTAGERANGE_16V |
@@ -113,117 +98,51 @@ void setCalibration_16V_3A()
 					  INA219_CONFIG_BADCRES_12BIT |
 					  INA219_CONFIG_SADCRES_12BIT_1S_532US |
 					  INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
-	wireWriteRegister(INA219_REG_CONFIG, config);
+	ina219_write_register(devive_addr, INA219_REG_CONFIG, config);
 }
 
-/********************************************************************/
 
-/* Gets the raw bus voltage (16-bit signed integer, so +-32767)
- * return the raw bus voltage reading */
-int16_t getBusVoltage_raw()
+/* public: */
+void ina219_init()
+{
+	/* Set Calibration 16V 3A */
+	ina219_calibration_16v_3a(INA219_LEFT_ADDR);
+	ina219_calibration_16v_3a(INA219_RIGHT_ADDR);
+}
+
+int16_t ina219_get_bus_voltage_mV(uint8_t devive_addr)
 {
   uint16_t value;
-  wireReadRegister(INA219_REG_BUSVOLTAGE, &value);
+  ina219_read_register(devive_addr, INA219_REG_BUSVOLTAGE, &value);
 
   // Shift to the right 3 to drop CNVR and OVF and multiply by LSB
   return (int16_t)((value >> 3) * 4);
 }
 
-/* Gets the raw shunt voltage (16-bit signed integer, so +-32767)
- * return the raw shunt voltage reading */
-int16_t getShuntVoltage_raw()
+int16_t ina219_get_shunt_voltage_uV(uint8_t devive_addr)
 {
   uint16_t value;
-  wireReadRegister(INA219_REG_SHUNTVOLTAGE, &value);
+  ina219_read_register(devive_addr, INA219_REG_SHUNTVOLTAGE, &value);
 
-  return (int16_t)value;
+  return (int16_t)(value * 10);
 }
 
-/* Gets the raw current value (16-bit signed integer, so +-32767)
- * return the raw current reading! */
-int16_t getCurrent_raw()
+int16_t ina219_get_current_mA(uint8_t devive_addr)
 {
   uint16_t value;
 
-  // Sometimes a sharp load will reset the INA219, which will
-  // reset the cal register, meaning CURRENT and POWER will
-  // not be available ... avoid this by always setting a cal
-  // value even if it's an unfortunate extra step
-  wireWriteRegister(INA219_REG_CALIBRATION, ina219_calValue);
+  ina219_write_register(devive_addr, INA219_REG_CALIBRATION, ina219_calValue);
+  ina219_read_register(devive_addr, INA219_REG_CURRENT, &value);
 
-  // Now we can safely read the CURRENT register!
-  wireReadRegister(INA219_REG_CURRENT, &value);
-
-  return (int16_t)value;
+  return (int16_t)(value / ina219_current_divider_mA);
 }
 
-/* Gets the raw power value (16-bit signed integer, so +-32767)
- * return raw power reading! */
-int16_t getPower_raw()
+int16_t ina219_get_power_mW(uint8_t devive_addr)
 {
   uint16_t value;
 
-  // Sometimes a sharp load will reset the INA219, which will
-  // reset the cal register, meaning CURRENT and POWER will
-  // not be available ... avoid this by always setting a cal
-  // value even if it's an unfortunate extra step
-  wireWriteRegister(INA219_REG_CALIBRATION, ina219_calValue);
+  ina219_write_register(devive_addr, INA219_REG_CALIBRATION, ina219_calValue);
+  ina219_read_register(devive_addr, INA219_REG_POWER, &value);
 
-  // Now we can safely read the POWER register!
-  wireReadRegister(INA219_REG_POWER, &value);
-
-  return (int16_t)value;
+  return (int16_t)(value * ina219_power_multiplier_mW);
 }
-
-/* Gets the shunt voltage in mV (so +-327mV)
- * return the shunt voltage converted to millivolts */
-float getShuntVoltage_mV()
-{
-  int16_t value;
-  value = getShuntVoltage_raw();
-
-  return value * 0.01;
-}
-
-/* Gets the shunt voltage in volts
- * return the bus voltage converted to volts */
-float getBusVoltage_V()
-{
-  int16_t value = getBusVoltage_raw();
-
-  return value * 0.001;
-}
-
-/* Gets the current value in mA, taking into account the config settings and current LSB
- * return the current reading convereted to milliamps */
-float getCurrent_mA()
-{
-  float valueDec = getCurrent_raw();
-  valueDec /= ina219_currentDivider_mA;
-
-  return valueDec;
-}
-
-/* Gets the power value in mW, taking into account the config settings and current LSB
- * Return power reading converted to milliwatts */
-float getPower_mW()
-{
-  float valueDec = getPower_raw();
-  valueDec *= ina219_powerMultiplier_mW;
-
-  return valueDec;
-}
-
-
-/* Описание:
- *
- * Датчик можно использовать и без предварительных калибровок. По умолчанию доступно получение напряжения на шунте и напряжение на шине.
- * Но если вбить калибровочные значения, то можно получать значение тока и мощности.
- *
- *
- *  */
-
-
-
-
-

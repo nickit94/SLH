@@ -143,7 +143,7 @@ void line_rainbow(line_t* line)
 	switch(line->animation.current_state)
 	{
 	case 0:
-		line->animation.hsv_rainbow = rgb2hsv((rgb_t)COLOR_RED);
+		line->animation.hsv_rainbow = color_rgb2hsv((rgb_t)COLOR_RED);
 		swTimerSet(&line->animation.timer_palette, 0, line_time_color / RAINBOW_DELAY);
 		line->animation.current_state = 1;
 	break;
@@ -151,7 +151,7 @@ void line_rainbow(line_t* line)
 	case 1:
 		for (uint8_t i = 0; i < line->length; i++)
 		{
-			draw_pixel(line->x, line->y + i, hsv2rgb(line->animation.hsv_rainbow));
+			draw_pixel(line->x, line->y + i, color_hsv2rgb(line->animation.hsv_rainbow));
 			line->animation.hsv_rainbow.h = (line->animation.hsv_rainbow.h + (255 / line->length)) % 255;
 		}
 
