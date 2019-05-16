@@ -1,5 +1,7 @@
 #include "apa106.h"
 
+#define OLOLOLOLOLOLO
+
 /* private: */
 static const uint16_t mas_size_led_bufs[APA106_NUM_CHANNELS] = {
 		APA106_BUF_CH0_SIZE, APA106_BUF_CH1_SIZE,  APA106_BUF_CH2_SIZE,
