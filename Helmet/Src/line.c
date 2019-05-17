@@ -200,7 +200,7 @@ void line_create(line_t* line, uint8_t x, uint8_t y, uint8_t length,
 {
 	line->x = x;
 	line->y = y;
-	line->length = length;
+	line->length = (length == LINE_TO_END) ? (mas_count_leds_in_channel[x] - y) : length;
 	line->type = type_object_line;
 	constr_init_animation(&line->animation, palette, multiplicity, time_change_one_color, 0);
 }

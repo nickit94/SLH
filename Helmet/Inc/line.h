@@ -3,6 +3,8 @@
 
 #include <main.h>
 
+#define LINE_TO_END	200
+
 typedef enum
 {
 	line_orient_horizontal = 1,

@@ -3,6 +3,7 @@
 /* Основная палитра */
 #define MAIN_COLORS { COLOR_YELLOW, COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_PINK, COLOR_PURPLE, COLOR_ORANGE, COLOR_CYAN, COLOR_LIGHT_GREEN, COLOR_WHITE }
 
+
 /* ---------------------------  for all objects: ---------------------------  */
 
 uint8_t num_step_accumulation(uint8_t num_led)
@@ -41,6 +42,10 @@ palette_t palette_gradient = {palette_rule_gradient, MAIN_COLORS, 10};
 palette_t palette_rainbow = {palette_rule_rainbow, {}, 0};
 palette_t palette_at_once = {palette_rule_at_once, MAIN_COLORS, 10};
 
+palette_t palette_police_red = {palette_rule_at_once,
+		{COLOR_RED, COLOR_BLACK, COLOR_RED, COLOR_BLACK,      COLOR_BLACK,   COLOR_BLACK, COLOR_BLACK, COLOR_BLACK, COLOR_BLACK,   COLOR_BLACK}, 10};
+palette_t palette_police_blue = {palette_rule_at_once,
+		{COLOR_BLACK, COLOR_BLACK, COLOR_BLACK, COLOR_BLACK,  COLOR_BLACK,   COLOR_BLUE, COLOR_BLACK, COLOR_BLUE, COLOR_BLACK,     COLOR_BLACK}, 10};
 
 /* private container: */
 void container_start_update()
@@ -93,13 +98,11 @@ void container_set_anim_2()
 	line_create(&line4, 11, 13, 20, palette_rainbow, 0, 4000);
 	line_create(&line5, 2,  13, 27, palette_rainbow, 0, 5000);
 	line_create(&line6, 10, 13, 27, palette_rainbow, 0, 5000);
-
 	rect_create(&rect1, 0, 6, 7, palette_rainbow, 0, 800);
 	rect_create(&rect2, 12, 6, 7, palette_rainbow, 0, 800);
 
 	container_add(1, (void*)&rect1);
 	container_add(1, (void*)&rect2);
-
 	container_add(1, (void*)&line1);
 	container_add(1, (void*)&line2);
 	container_add(1, (void*)&line3);
@@ -113,7 +116,30 @@ void container_set_anim_3()
 	ca_create(&ca, start_state_ca_random, shift_direction_down, palette_rainbow, 0, 5000, 100);
 	container_add(2, (void*)&ca);
 }
-void container_set_anim_4() {}
+void container_set_anim_4()
+{
+	static line_t line1, line2, line3, line4, line5, line6;
+	static rectangle_t rect1, rect2;
+
+	rect_create(&rect1, 0,  5,  5, palette_police_red, 0, 80);
+	rect_create(&rect2, 12, 5,  6, palette_police_blue, 0, 80);
+	line_create(&line1, 0,  13, LINE_TO_END, palette_police_red, 0, 80);
+    line_create(&line2, 12, 12, LINE_TO_END, palette_police_blue, 0, 80);
+	line_create(&line3, 1,  13, LINE_TO_END, palette_police_red, 0, 80);
+	line_create(&line4, 11, 12, LINE_TO_END, palette_police_blue, 0, 80);
+	line_create(&line5, 2,  13, LINE_TO_END, palette_police_red, 0, 80);
+	line_create(&line6, 10, 12, LINE_TO_END, palette_police_blue, 0, 80);
+
+	container_add(3, (void*)&rect1);
+	container_add(3, (void*)&rect2);
+	container_add(3, (void*)&line1);
+	container_add(3, (void*)&line2);
+	container_add(3, (void*)&line3);
+	container_add(3, (void*)&line4);
+	container_add(3, (void*)&line5);
+	container_add(3, (void*)&line6);
+
+}
 void container_set_anim_5() {}
 void container_set_anim_6() {}
 void container_set_anim_7() {}
@@ -147,6 +173,11 @@ void container_init()
 	container_set_anim_1();
 	container_set_anim_2();
 	container_set_anim_3();
+	container_set_anim_4();
+	container_set_anim_5();
+	container_set_anim_6();
+	container_set_anim_7();
+	container_set_anim_8();
 }
 
 void container_run()

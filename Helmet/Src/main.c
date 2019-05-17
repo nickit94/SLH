@@ -93,9 +93,11 @@ int main(void)
   container_init();
   button_init();
   ca_random_init();
-  i2c_init();
-  ina219_init();
+ // i2c_init();
+ // ina219_init();
   /* USER CODE END 2 */
+
+  container_next(); container_next(); container_next();
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */

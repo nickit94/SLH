@@ -16,7 +16,7 @@ uint8_t cur_led_channel = 0;
 swtimer_t st_update;
 
 /* public: */
-uint8_t apa106_cur_ind_bright = 5;//3;
+uint8_t apa106_cur_ind_bright = 3;//3;
 
 /***************************************************************************************************/
 
